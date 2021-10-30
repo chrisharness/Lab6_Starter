@@ -1,8 +1,9 @@
 class RecipeCard extends HTMLElement {
   constructor() {
     // Part 1 Expose - TODO
-
+    super();
     // You'll want to attach the shadow DOM here
+    this.attachShadow({mode: 'open'});
   }
 
   set data(data) {
@@ -87,7 +88,7 @@ class RecipeCard extends HTMLElement {
 
     // Here's the root element that you'll want to attach all of your other elements to
     const card = document.createElement('article');
-
+    
     // Some functions that will be helpful here:
     //    document.createElement()
     //    document.querySelector()
@@ -98,8 +99,82 @@ class RecipeCard extends HTMLElement {
 
     // Make sure to attach your root element and styles to the shadow DOM you
     // created in the constructor()
-
+    this.shadowRoot.appendChild(styleElem);
+    this.shadowRoot.appendChild(card);
     // Part 1 Expose - TODO
+    let img = document.createElement('img');
+    let src_img = searchForKey(data, 'thumbnailUrl');
+    let title = searchForKey(data, 'headline');
+    
+    img.setAttribute('src', src_img);
+    img.setAttribute('alt', title);
+    card.appendChild(img);
+
+    let ptitle = document.createElement('p');
+    let wrating_link = document.createElement('a');
+    ptitle.className = 'title';
+    card.appendChild(ptitle);
+
+    let url = getUrl(data);
+    wrating_link.setAttribute('href', url);
+    let name = searchForKey(data, 'name');
+    wrating_link.textContent = title;
+    ptitle.appendChild(wrating_link);
+
+    let pOrg = document.createElement('p');
+    let org = getOrganization(data);
+    pOrg.className = 'organization';
+    pOrg.textContent = org;
+    card.appendChild(pOrg);
+
+    let rating = document.createElement('div');
+    rating.className = 'rating';
+    let rating_val = searchForKey(data,'ratingValue');
+
+
+    if(rating_val){
+
+      let rating_span1 = document.createElement('span');
+      rating_span1.textContent = rating_val;
+      rating.appendChild(rating_span1);
+
+      let rating_img = document.createElement('img');
+      let rating_rounded = Math.round(rating_val);
+      rating_img.src = 'assets/images/icons/' + rating_rounded + '-star.svg' ;
+      rating_img.alt = rating_rounded + ' stars';
+      rating.appendChild(rating_img);
+
+      let rating_span2 = document.createElement('span');
+      let rating_count = searchForKey(data, 'ratingCount');
+      rating_span2.textContent= '(' + rating_count + ')';
+      rating.appendChild(rating_span2);
+
+    }
+    else{
+
+      let norating_span = document.createElement('span');
+      norating_span.textContent = 'No Reviews';
+      rating.appendChild(norating_span);
+
+    }
+    card.appendChild(rating);
+
+
+    let time_tag = document.createElement('time');
+    let time = searchForKey(data,'totalTime');
+    let real_time = convertTime(time);
+    time_tag.textContent = real_time;
+    card.appendChild(time_tag);
+
+    let pIngredients = document.createElement('p');
+    pIngredients.className = 'ingredients';
+    let ingredients = searchForKey(data, 'recipeIngredient');
+    pIngredients.textContent = createIngredientList(ingredients);
+    card.appendChild(pIngredients);
+
+
+
+
   }
 }
 
